@@ -1,12 +1,11 @@
 import os
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Flask, request, render_template
 from werkzeug.utils import secure_filename
 import subprocess
 from flask_bootstrap import Bootstrap
 
-
 UPLOAD_FOLDER = '/home/emil/DevicesFarm/apk/'
-ALLOWED_EXTENSIONS = set(['apk'])
+ALLOWED_EXTENSIONS = {'apk'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -14,20 +13,30 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 bootstrap = Bootstrap(app)
 
 
-@app.route('/adb/', methods=['post', 'get'])
-def index():
-    message = ''
-    list3 = []
-    list1 = subprocess.check_output(
+def sp_adb_devces():
+    adb_devices = []
+    subp_output = subprocess.check_output(
         f'docker exec -i container-appium adb devices',
         shell=True)
-    list1 = list1.decode()
-    list1 = list1.replace("List of devices attached", "")
-    list1 = list1.split()
+    subp_output = subp_output.decode()
+    subp_output = subp_output.replace("List of devices attached", "")
+    subp_output = subp_output.split()
+    for i in range(0, len(subp_output), 2):
+        if subp_output[i + 1] == 'device':
 
-    for i in range(0, len(list1), 2):
-        list3.append((list1[i], list1[i + 1]))
+            build_version = subprocess.check_output(
+                f'docker exec -i container-appium adb -s {subp_output[i]} shell getprop ro.build.display.id',
+                shell=True).decode()
+            adb_devices.append((subp_output[i], subp_output[i + 1], build_version))
 
+    return adb_devices
+
+
+@app.route('/')
+@app.route('/adb/', methods=['POST', 'GET'])
+def index():
+    message = ''
+    adb_devices = sp_adb_devces()
     if request.method == 'POST':
         udid = request.form.get('udid')
         action = request.form.get('butt')
@@ -35,9 +44,8 @@ def index():
             if '192.168.2' in udid:
                 message = subprocess.check_output(
                     f'docker exec -i container-appium adb {action} {udid}',
-                    shell=True)
-                message = message.decode()
-    return render_template('index.html', devices=list3, message=message)
+                    shell=True).decode()
+    return render_template('index.html', devices=adb_devices, message=message)
 
 
 def allowed_file(filename):
@@ -51,8 +59,18 @@ def upload_file():
         udid = request.form['udid']
         file = request.files['file']
         if file and allowed_file(file.filename):
-            file.save(os.path.join('/home/emil/DevicesFarm/apk/', secure_filename(file.filename)))
-            print(subprocess.check_output(
+            file.save(os.path.join(UPLOAD_FOLDER, secure_filename(file.filename)))
+            subprocess.check_output(
                 f'docker exec -i container-appium adb -s {udid} install -r -d /home/DevicesFarm/apk/{file.filename}',
-                shell=True))
+                shell=True)
         return render_template('installed.html')
+
+
+@app.route('/', methods=['POST'])
+def shell():
+    if request.method == 'POST':
+        udid = request.form['udid']
+        shell_command = request.form['shell']
+        message = subprocess.check_output(f'docker exec -i container-appium adb -s {udid} shell {shell_command}', shell=True).decode()
+        adb_devices = sp_adb_devces()
+        return render_template('index.html', message=message, devices=adb_devices)

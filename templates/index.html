@@ -10,7 +10,7 @@
 
   <style type="text/css">
    TABLE {
-    width: 50%;
+    width: 75%;
     border: 2px solid #0095b6;
     border-spacing: 7px 5px;
    }
@@ -36,6 +36,11 @@
             <td><input type="file" name="file"><input type="submit" value="install"></td>
         </form>
     {% endif %}
+        <td>{{cur_device[2]}}</td>
+        <form action="/" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="udid" value="{{cur_device[0]}}">
+        <td>shell: <input type="text" name="shell"><input type="submit"></td>
+        </form>
     </tr>
     {%endfor%}
 </table>
@@ -44,7 +49,7 @@
         <p>{{ message }}</p>
     {% endif %}
 <hr>
-    <form action="" method="post">
+    <form action="/adb/" method="post">
         <p>
 	    <label for="udid"> IP Adress: <input type="text" id="udid" name="udid"></label>
 	</p>
