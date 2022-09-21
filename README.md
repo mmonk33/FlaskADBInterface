@@ -1,2 +1,6 @@
 # FlaskADBInterface
-![image](https://user-images.githubusercontent.com/102417439/190995307-32811661-7d9c-43bf-859b-7234a833a318.png)
+![image](https://user-images.githubusercontent.com/102417439/191422222-626a9e6b-cd6c-4624-b960-7b67de04a10f.png)
+1. ADB connect/disconnect 
+2. ADB install 
+3. Build description
+4. ADB shell
