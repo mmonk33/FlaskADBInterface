@@ -63,12 +63,16 @@ def upload_file():
     if request.method == 'POST':
         udid = request.form['udid']
         file = request.files['file']
-        if file and allowed_file(file.filename):
-            file.save(os.path.join(UPLOAD_FOLDER, secure_filename(file.filename)))
-            subprocess.check_output(
-                f'docker exec -i container-appium adb -s {udid} install -r -d /home/DevicesFarm/apk/{file.filename}',
-                shell=True)
-        return render_template('installed.html')
+        if file.filename != '':
+            if file and allowed_file(file.filename):
+                file.save(os.path.join(UPLOAD_FOLDER, secure_filename(file.filename)))
+                subprocess.check_output(
+                    f'docker exec -i container-appium adb -s {udid} install -r -d /home/DevicesFarm/apk/{file.filename}',
+                    shell=True)
+            return render_template('installed.html')
+        else:
+            adb_devices = sp_adb_devces()
+            return render_template('index.html', devices=adb_devices, message='File is not selected')
 
 
 @app.route('/', methods=['POST'])
