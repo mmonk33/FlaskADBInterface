@@ -29,21 +29,21 @@
         <td>{{cur_device[0]}}</td>
         {%if cur_device[1] != 'device'%}
             <td style="color:red;font-weight: bold;">{{cur_device[1]}}</td>
-    {% else %}
-        <td style="color:green;font-weight: bold;">{{cur_device[1]}}</td>
-        {%if cur_device[2] != '' and cur_device[1] == 'device'%}
-        <form action="/install/" method="POST" enctype="multipart/form-data">
-             <input type="hidden" name="udid" value="{{cur_device[0]}}">
-            <td><input type="file" name="file"><input type="submit" value="install"></td>
-        </form>
+            {% else %}
+            <td style="color:green;font-weight: bold;">{{cur_device[1]}}</td>
+            {%if cur_device[2] != '' and cur_device[1] == 'device'%}
+            <form action="/install/" method="POST" enctype="multipart/form-data">
+                 <input type="hidden" name="udid" value="{{cur_device[0]}}">
+                <td><input type="file" name="file"><input type="submit" value="install"></td>
+            </form>
+            {% endif %}
         {% endif %}
-    {% endif %}
         {%if cur_device[2] != '' and cur_device[1] == 'device'%}
-        <td>{{cur_device[2]}}</td>
-        <form action="/" method="POST" enctype="multipart/form-data">
-            <input type="hidden" name="udid" value="{{cur_device[0]}}">
-        <td>shell: <input type="text" name="shell"><input type="submit"></td>
-        </form>
+            <td>{{cur_device[2]}}</td>
+            <form action="/" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="udid" value="{{cur_device[0]}}">
+            <td>shell: <input type="text" name="shell"><input type="submit"></td>
+            </form>
         {% endif %}
     </tr>
     {%endfor%}
