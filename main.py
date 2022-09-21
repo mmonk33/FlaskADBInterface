@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, render_template
 from werkzeug.utils import secure_filename
 import subprocess
+import pythonping
 from flask_bootstrap import Bootstrap
 
 UPLOAD_FOLDER = '/home/emil/DevicesFarm/apk/'
@@ -22,13 +23,17 @@ def sp_adb_devces():
     subp_output = subp_output.replace("List of devices attached", "")
     subp_output = subp_output.split()
     for i in range(0, len(subp_output), 2):
+        subp_output[i] = subp_output[i].replace(':5555', '')
         if subp_output[i + 1] == 'device':
-
-            build_version = subprocess.check_output(
-                f'docker exec -i container-appium adb -s {subp_output[i]} shell getprop ro.build.display.id',
-                shell=True).decode()
-            adb_devices.append((subp_output[i], subp_output[i + 1], build_version))
-
+            if pythonping.ping(subp_output[i], count=3, verbose=False).success():
+                build_version = subprocess.check_output(
+                    f'docker exec -i container-appium adb -s {subp_output[i]} shell getprop ro.build.display.id',
+                    shell=True).decode()
+                adb_devices.append((subp_output[i], subp_output[i + 1], build_version))
+            else:
+                adb_devices.append((subp_output[i], subp_output[i + 1], ''))
+        else:
+            adb_devices.append((subp_output[i], subp_output[i + 1]))
     return adb_devices
 
 
@@ -71,6 +76,9 @@ def shell():
     if request.method == 'POST':
         udid = request.form['udid']
         shell_command = request.form['shell']
-        message = subprocess.check_output(f'docker exec -i container-appium adb -s {udid} shell {shell_command}', shell=True).decode()
+        if shell_command is not '':
+            message = subprocess.check_output(f'docker exec -i container-appium adb -s {udid} shell {shell_command}', shell=True).decode()
+        else:
+            message = 'Empty request'
         adb_devices = sp_adb_devces()
         return render_template('index.html', message=message, devices=adb_devices)
