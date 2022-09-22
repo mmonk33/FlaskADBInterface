@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEVICES</title>
+    <title>Android devices</title>
     {% block styles %}
         <link href="../static/css/bootstrap.min.css" rel="stylesheet">
         <link href="../static/css/style.css" rel="stylesheet">
@@ -10,12 +10,16 @@
 
   <style type="text/css">
    TABLE {
-    border: 2px solid #0095b6;
+    border: 2px solid #8a8a8a;
     border-spacing: 7px 5px;
    }
    TD {
-    border: 2px solid #0095b6;
     padding: 5px;
+    border: 2px solid #8a8a8a;
+   }
+   TH {
+    padding: 5px;
+    border: 2px solid #8a8a8a;
    }
    div .ADB {
      float: left;
@@ -27,7 +31,18 @@
 <body>
 <div style="margin: 25px">
     <h1>DEVICES:</h1>
-    <table>
+    <table class="table table-hover">
+          <thead>
+            <tr class="table-dark">
+                <th scope="col" style="text-align: center;">IP</th>
+                <th scope="col" style="text-align: center;">STATUS</th>
+                <th scope="col" style="text-align: center;">APK INSTALL</th>
+                <th scope="col" style="text-align: center;">BUILD</th>
+                <th scope="col" style="text-align: center;">SHELL</th>
+                <th scope="col" style="text-align: center;">DISCONNECT</th>
+            </tr>
+        </thead>
+        <tbody>
         {%for cur_device in devices%}
         <tr>
             <td>{{cur_device[0]}}</td>
@@ -37,7 +52,7 @@
                 <td style="color:green;font-weight: bold;">{{cur_device[1]}}</td>
                 {%if cur_device[2] != '' and cur_device[1] == 'device'%}
                     <form action="/install/" method="POST" enctype="multipart/form-data">
-                         <input type="hidden" name="udid" value="{{cur_device[0]}}">
+                        <input type="hidden" name="udid" value="{{cur_device[0]}}">
                         <td><input type="file" name="file"><input type="submit" value="install"></td>
                     </form>
                 {% endif %}
@@ -55,9 +70,10 @@
             {% endif %}
         </tr>
         {%endfor%}
+        </tbody>
     </table>
     <hr>
-    <div class="form-group">
+    <div class="form-group" style="width:80%">
         <textarea class="form-control" id="exampleFormControlTextarea">{% if message %}{{ message }}{% endif %}</textarea>
     </div>
     <hr>

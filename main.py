@@ -14,7 +14,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 bootstrap = Bootstrap(app)
 
 
-def sp_adb_devces():
+def sp_adb_devices():
     adb_devices = []
     subp_output = subprocess.check_output(
         f'docker exec -i container-appium adb devices',
@@ -41,7 +41,7 @@ def sp_adb_devces():
 @app.route('/adb/', methods=['POST', 'GET'])
 def index():
     message = ''
-    adb_devices = sp_adb_devces()
+    adb_devices = sp_adb_devices()
     if request.method == 'POST':
         udid = request.form.get('udid')
         action = request.form.get('butt')
@@ -50,7 +50,7 @@ def index():
                 message = subprocess.check_output(
                     f'docker exec -i container-appium adb {action} {udid}',
                     shell=True).decode()
-                adb_devices = sp_adb_devces()
+                adb_devices = sp_adb_devices()
     return render_template('index.html', devices=adb_devices, message=message)
 
 
@@ -72,7 +72,7 @@ def upload_file():
                     shell=True)
             return render_template('installed.html')
         else:
-            adb_devices = sp_adb_devces()
+            adb_devices = sp_adb_devices()
             return render_template('index.html', devices=adb_devices, message='File is not selected')
 
 
@@ -85,5 +85,5 @@ def shell():
             message = subprocess.check_output(f'docker exec -i container-appium adb -s {udid} shell {shell_command}', shell=True).decode()
         else:
             message = 'Empty request'
-        adb_devices = sp_adb_devces()
+        adb_devices = sp_adb_devices()
         return render_template('index.html', message=message, devices=adb_devices)
