@@ -10,7 +10,6 @@
 
   <style type="text/css">
    TABLE {
-    width: 75%;
     border: 2px solid #0095b6;
     border-spacing: 7px 5px;
    }
@@ -18,49 +17,60 @@
     border: 2px solid #0095b6;
     padding: 5px;
    }
+   div .ADB {
+     float: left;
+     margin-right: 10px;
+     text-align: center;
+    }
 </style>
 </head>
 <body>
 <div style="margin: 25px">
     <h1>DEVICES:</h1>
-<table>
-    {%for cur_device in devices%}
-    <tr>
-        <td>{{cur_device[0]}}</td>
-        {%if cur_device[1] != 'device'%}
-            <td style="color:red;font-weight: bold;">{{cur_device[1]}}</td>
+    <table>
+        {%for cur_device in devices%}
+        <tr>
+            <td>{{cur_device[0]}}</td>
+            {%if cur_device[1] != 'device'%}
+                <td style="color:red;font-weight: bold;">{{cur_device[1]}}</td>
             {% else %}
-            <td style="color:green;font-weight: bold;">{{cur_device[1]}}</td>
-            {%if cur_device[2] != '' and cur_device[1] == 'device'%}
-            <form action="/install/" method="POST" enctype="multipart/form-data">
-                 <input type="hidden" name="udid" value="{{cur_device[0]}}">
-                <td><input type="file" name="file"><input type="submit" value="install"></td>
-            </form>
+                <td style="color:green;font-weight: bold;">{{cur_device[1]}}</td>
+                {%if cur_device[2] != '' and cur_device[1] == 'device'%}
+                    <form action="/install/" method="POST" enctype="multipart/form-data">
+                         <input type="hidden" name="udid" value="{{cur_device[0]}}">
+                        <td><input type="file" name="file"><input type="submit" value="install"></td>
+                    </form>
+                {% endif %}
             {% endif %}
-        {% endif %}
-        {%if cur_device[2] != '' and cur_device[1] == 'device'%}
-            <td>{{cur_device[2]}}</td>
-            <form action="/" method="POST" enctype="multipart/form-data">
-                <input type="hidden" name="udid" value="{{cur_device[0]}}">
-            <td>shell: <input type="text" name="shell"><input type="submit"></td>
-            </form>
-        {% endif %}
-    </tr>
-    {%endfor%}
-</table>
-   <hr>
-    {% if message %}
-        <p>{{ message }}</p>
-    {% endif %}
-<hr>
+            {%if cur_device[2] != '' and cur_device[1] == 'device'%}
+                <td>{{cur_device[2]}}</td>
+                <form action="/" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="udid" value="{{cur_device[0]}}">
+                <td>shell: <input type="text" name="shell"><input type="submit"></td>
+                </form>
+                <form action="/adb/" method="post">
+                    <input type="hidden" name="udid" value="{{cur_device[0]}}">
+                    <td><input type="submit" class="btn btn-danger" value="disconnect" name="butt"></td>
+                </form>
+            {% endif %}
+        </tr>
+        {%endfor%}
+    </table>
+    <hr>
+    <div class="form-group">
+        <textarea class="form-control" id="exampleFormControlTextarea">{% if message %}{{ message }}{% endif %}</textarea>
+    </div>
+    <hr>
     <form action="/adb/" method="post">
-        <p>
-	    <label for="udid"> IP Adress: <input type="text" id="udid" name="udid"></label>
-	</p>
-	<p>
-	    <input type="submit" value="connect" name="butt">
-        <input type="submit" value="disconnect" name="butt">
-	</p>
+        <div class="ADB">
+            <label for="udid" ><b> IP Adress: </b><input type="text" id="udid" name="udid" style="line-height:33px"></label>
+        </div>
+        <div class="ADB">
+            <input type="submit" class="btn btn-success" value="connect" name="butt">
+        </div>
+        <div class="ADB">
+            <input type="submit" class="btn btn-danger" value="disconnect" name="butt">
+        </div>
     </form>
 </div>
 

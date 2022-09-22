@@ -50,6 +50,7 @@ def index():
                 message = subprocess.check_output(
                     f'docker exec -i container-appium adb {action} {udid}',
                     shell=True).decode()
+                adb_devices = sp_adb_devces()
     return render_template('index.html', devices=adb_devices, message=message)
 
 
