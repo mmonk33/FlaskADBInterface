@@ -5,7 +5,7 @@ import subprocess
 import pythonping
 from flask_bootstrap import Bootstrap
 
-UPLOAD_FOLDER = '/home/emil/DevicesFarm/apk/'
+UPLOAD_FOLDER = ''
 ALLOWED_EXTENSIONS = {'apk'}
 
 app = Flask(__name__)

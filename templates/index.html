@@ -31,6 +31,7 @@
 <body>
 <div style="margin: 25px">
     <h1>DEVICES:</h1>
+    {% if devices %}
     <table class="table table-hover">
           <thead>
             <tr class="table-dark">
@@ -72,6 +73,9 @@
         {%endfor%}
         </tbody>
     </table>
+    {% else %}
+    <p>No connected devices</p>
+    {% endif %}
     <hr>
     <div class="form-group" style="width:80%">
         <textarea class="form-control" id="exampleFormControlTextarea">{% if message %}{{ message }}{% endif %}</textarea>
