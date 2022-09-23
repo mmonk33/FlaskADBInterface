@@ -89,7 +89,10 @@ def shell():
         udid = request.form['udid']
         shell_command = request.form['shell']
         if shell_command is not '':
-            message = subprocess.check_output(f'docker exec -i container-appium adb -s {udid} shell {shell_command}', shell=True).decode()
+            try:
+                message = subprocess.check_output(f'docker exec -i container-appium adb -s {udid} shell {shell_command}', shell=True).decode()
+            except:
+                message = 'Uncorrect shell command'
         else:
             message = 'Empty request'
         adb_devices = sp_adb_devices()
