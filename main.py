@@ -77,7 +77,9 @@ def upload_file():
                 subprocess.check_output(
                     f'docker exec -i container-appium adb -s {udid} install -r -d /home/DevicesFarm/apk/{file.filename}',
                     shell=True)
-            return render_template('installed.html')
+                return render_template('installed.html')
+            adb_devices = sp_adb_devices()
+            return render_template('index.html', devices=adb_devices, message='Not allowed file extension!')
         else:
             adb_devices = sp_adb_devices()
             return render_template('index.html', devices=adb_devices, message='File is not selected')
