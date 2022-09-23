@@ -5,7 +5,7 @@ import subprocess
 import pythonping
 from flask_bootstrap import Bootstrap
 
-UPLOAD_FOLDER = ''
+UPLOAD_FOLDER = '/home/emil/DevicesFarm/apk/'
 ALLOWED_EXTENSIONS = {'apk'}
 
 app = Flask(__name__)
@@ -45,12 +45,19 @@ def index():
     if request.method == 'POST':
         udid = request.form.get('udid')
         action = request.form.get('butt')
-        if action == 'connect' or action == 'disconnect':
+        if action == 'connect':
             if '192.168.2' in udid:
-                message = subprocess.check_output(
-                    f'docker exec -i container-appium adb {action} {udid}',
-                    shell=True).decode()
-                adb_devices = sp_adb_devices()
+                    message = subprocess.check_output(
+                        f'docker exec -i container-appium adb {action} {udid}',
+                        shell=True).decode()
+                    adb_devices = sp_adb_devices()
+        elif action == 'disconnect':
+            for i in adb_devices:
+                if udid in i:
+                    message = subprocess.check_output(
+                        f'docker exec -i container-appium adb {action} {udid}',
+                        shell=True).decode()
+                    adb_devices = sp_adb_devices()
     return render_template('index.html', devices=adb_devices, message=message)
 
 
