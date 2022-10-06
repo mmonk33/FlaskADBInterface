@@ -103,7 +103,6 @@ def shell():
 
 @app.route('/remote/<string:udid>/', methods=['POST', 'GET'])
 def remote(udid):
-    print('Sooqa')
     if request.method == 'POST':
         action = request.form.get('action')
         subprocess.check_output(
@@ -112,7 +111,10 @@ def remote(udid):
         subprocess.check_output(
             f'docker exec -i container-appium adb -s {udid} exec-out screencap -p > /home/emil/DevicesFarm/static/{udid}_screen.png',
             shell=True)
-
+    elif request.method == 'GET':
+        subprocess.check_output(
+            f'docker exec -i container-appium adb -s {udid} exec-out screencap -p > /home/emil/DevicesFarm/static/{udid}_screen.png',
+            shell=True)
     return render_template('remote.html', udid=udid)
 
 
