@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 from werkzeug.utils import secure_filename
 import subprocess
 import pythonping
@@ -75,7 +75,7 @@ def upload_file():
             if file and allowed_file(file.filename):
                 file.save(os.path.join(UPLOAD_FOLDER, secure_filename(file.filename)))
                 subprocess.check_output(
-                    f'docker exec -i container-appium adb -s {udid} install -r -d /home/DevicesFarm/apk/{file.filename}',
+                    f'docker exec -i container-appium adb -s {udid} install -r -d \"/home/DevicesFarm/apk/{file.filename}\"',
                     shell=True)
                 return render_template('installed.html')
             adb_devices = sp_adb_devices()
@@ -99,3 +99,20 @@ def shell():
             message = 'Empty request'
         adb_devices = sp_adb_devices()
         return render_template('index.html', message=message, devices=adb_devices)
+
+
+@app.route('/remote/<string:udid>/', methods=['POST', 'GET'])
+def remote(udid):
+    print('Sooqa')
+    if request.method == 'POST':
+        action = request.form.get('action')
+        subprocess.check_output(
+            f'docker exec -i container-appium adb -s {udid} shell input keyevent {action}',
+            shell=True)
+        subprocess.check_output(
+            f'docker exec -i container-appium adb -s {udid} exec-out screencap -p > /home/emil/DevicesFarm/static/{udid}_screen.png',
+            shell=True)
+
+    return render_template('remote.html', udid=udid)
+
+

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Remote control</title>
+    {% block styles %}
+        <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../static/css/style.css" rel="stylesheet">
+    {% endblock %}
+
+  <style type="text/css">
+   .image {
+    float: left;
+    margin-right: 20px;
+   }
+  </style>
+</head>
+<body>
+<div style="margin: 25px; float: left">
+    <a href="../../adb/">BACK</a>
+    {{udid}}
+    <div>
+        <img src="{{url_for('static', filename=udid+'_screen.png')}}" height="40%" width="40%"/>
+    </div>
+     <form action="" method="POST" enctype="multipart/form-data">
+        <div style="width: 180px">
+            <div align="center">
+                <button type="submit" value="19" name="action">
+                    UP
+                </button>
+            </div>
+            <div>
+                <button type="submit" value="21" name="action">
+                    LEFT
+                </button>
+                <button type="submit" value="23" name="action">
+                    OK
+                </button>
+                <button type="submit" value="22" name="action">
+                    RIGHT
+                </button>
+            </div>
+            <div align="center">
+                <button type="submit" value="20" name="action">
+                    DOWN
+                </button>
+            </div>
+        </div>
+     </form>
+</div>
+
+</body>
+</html>
