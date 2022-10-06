@@ -47,10 +47,10 @@ def index():
         action = request.form.get('butt')
         if action == 'connect':
             if '192.168.2' in udid:
-                    message = subprocess.check_output(
-                        f'docker exec -i container-appium adb {action} {udid}',
-                        shell=True).decode()
-                    adb_devices = sp_adb_devices()
+                message = subprocess.check_output(
+                    f'docker exec -i container-appium adb {action} {udid}',
+                    shell=True).decode()
+                adb_devices = sp_adb_devices()
         elif action == 'disconnect':
             for i in adb_devices:
                 if udid in i:
@@ -85,14 +85,15 @@ def upload_file():
             return render_template('index.html', devices=adb_devices, message='File is not selected')
 
 
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['POST', 'GET'])
 def shell():
     if request.method == 'POST':
         udid = request.form['udid']
         shell_command = request.form['shell']
         if shell_command is not '':
             try:
-                message = subprocess.check_output(f'docker exec -i container-appium adb -s {udid} shell {shell_command}', shell=True).decode()
+                message = subprocess.check_output(
+                    f'docker exec -i container-appium adb -s {udid} shell {shell_command}', shell=True).decode()
             except:
                 message = 'Uncorrect shell command'
         else:
@@ -103,18 +104,19 @@ def shell():
 
 @app.route('/remote/<string:udid>/', methods=['POST', 'GET'])
 def remote(udid):
-    if request.method == 'POST':
-        action = request.form.get('action')
-        subprocess.check_output(
-            f'docker exec -i container-appium adb -s {udid} shell input keyevent {action}',
-            shell=True)
-        subprocess.check_output(
-            f'docker exec -i container-appium adb -s {udid} exec-out screencap -p > /home/emil/DevicesFarm/static/{udid}_screen.png',
-            shell=True)
-    elif request.method == 'GET':
-        subprocess.check_output(
-            f'docker exec -i container-appium adb -s {udid} exec-out screencap -p > /home/emil/DevicesFarm/static/{udid}_screen.png',
-            shell=True)
+    try:
+        if request.method == 'POST':
+            action = request.form.get('action')
+            subprocess.check_output(
+                f'docker exec -i container-appium adb -s {udid} shell input keyevent {action}',
+                shell=True)
+            subprocess.check_output(
+                f'docker exec -i container-appium adb -s {udid} exec-out screencap -p > /home/emil/DevicesFarm/static/{udid}_screen.png',
+                shell=True)
+        elif request.method == 'GET':
+            subprocess.check_output(
+                f'docker exec -i container-appium adb -s {udid} exec-out screencap -p > /home/emil/DevicesFarm/static/{udid}_screen.png',
+                shell=True)
+    except:
+        return redirect('../../')
     return render_template('remote.html', udid=udid)
-
-
