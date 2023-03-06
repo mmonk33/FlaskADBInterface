@@ -71,6 +71,7 @@ def upload_file():
     if request.method == 'POST':
         udid = request.form['udid']
         file = request.files['file']
+        file.filename = file.filename.replace(' ', '_')
         if file.filename != '':
             if file and allowed_file(file.filename):
                 file.save(os.path.join(UPLOAD_FOLDER, secure_filename(file.filename)))
@@ -111,11 +112,13 @@ def remote(udid):
                 f'docker exec -i container-appium adb -s {udid} shell input keyevent {action}',
                 shell=True)
             subprocess.check_output(
-                f'docker exec -i container-appium adb -s {udid} exec-out screencap -p > /home/emil/DevicesFarm/static/{udid}_screen.png',
+                f'docker exec -i container-appium adb -s {udid} exec-out screencap -p > '
+                f'/home/emil/DevicesFarm/static/{udid}_screen.png',
                 shell=True)
         elif request.method == 'GET':
             subprocess.check_output(
-                f'docker exec -i container-appium adb -s {udid} exec-out screencap -p > /home/emil/DevicesFarm/static/{udid}_screen.png',
+                f'docker exec -i container-appium adb -s {udid} exec-out screencap -p > '
+                f'/home/emil/DevicesFarm/static/{udid}_screen.png',
                 shell=True)
     except:
         return redirect('../../')
