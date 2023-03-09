@@ -1,4 +1,5 @@
 import os
+from transliterate import translit
 from flask import Flask, request, render_template, redirect
 from werkzeug.utils import secure_filename
 import subprocess
@@ -72,6 +73,7 @@ def upload_file():
         udid = request.form['udid']
         file = request.files['file']
         file.filename = file.filename.replace(' ', '_')
+        file.filename = translit(file.filename, language_code='ru', reversed=True)
         if file.filename != '':
             if file and allowed_file(file.filename):
                 file.save(os.path.join(UPLOAD_FOLDER, secure_filename(file.filename)))
@@ -123,3 +125,4 @@ def remote(udid):
     except:
         return redirect('../../')
     return render_template('remote.html', udid=udid)
+
